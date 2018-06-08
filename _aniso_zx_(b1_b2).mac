@@ -1,0 +1,153 @@
+!!!!!!!!!!!!!!!!!!!!!!!!
+!
+!		слоистый ауксетик, оазделение по плоскости zx
+!
+!!!!!!!!!!!!!!!!!!!!!!!!
+
+FINISH
+/CLEAR, START
+
+*do, binc, 1, 19, 1
+
+/PREP7
+
+ANTYPE, static
+ET, 1, solid64
+
+mp, ex, 1, 115e9
+mp, ey, 1, 115e9
+mp, ez, 1, 115e9
+
+mp, NUXY, 1, -0.54
+mp, NUYZ, 1, -0.54
+mp, NUXZ, 1, -0.54
+
+mp, GXY, 1, 125e9
+mp, GYZ, 1, 125e9
+mp, GXZ, 1, 125e9
+
+mp, ex, 2, 43.5e9
+mp, ey, 2, 43.5e9
+mp, ez, 2, 43.5e9
+
+mp, NUXY, 2, 0.43
+mp, NUYZ, 2, 0.43
+mp, NUXZ, 2, 0.43
+
+mp, GXY, 2, 15.2e9
+mp, GYZ, 2, 15.2e9
+mp, GXZ, 2, 15.2e9
+
+a = 0.1
+b_0 = 0.1
+c = 0.1
+
+! b = b_0 - (binc-1)/100		! changeing b from 0.1 ti 0.01
+b = 0.01
+
+block, 0, a, 0, ((binc)/10)*b, 0, c
+block, 0, a, 0, -(1-(binc)/10)*b, 0, c
+
+lesize, all, b/10
+
+mat, 1
+vmesh, 1
+
+mat, 2
+vmesh, 2
+
+nummrg, all
+OUTPR,,1
+
+da, 5, ux
+da, 11, ux
+
+da, 3, uy
+
+da, 1, uz
+
+da, 7, uz
+sfa, 6, 1, pres, 10e8
+sfa, 12, 1, pres, 10e8
+
+nlgeom, 1
+
+FINISH
+/SOLU
+SOLVE
+
+FINISH
+/POST1
+
+key_y_1 = 1
+key_y_2 = 10
+
+key_x_1 = 2
+key_x_2 = 4
+
+*GET, u_y_1, NODE, node(kx(key_y_1), ky(key_y_1), kz(key_y_1)), U, Y
+*GET, u_y_2, NODE, node(kx(key_y_2), ky(key_y_2), kz(key_y_2)), U, Y
+
+uy_summ = u_y_1/b + u_y_2/b
+
+*GET, u_x_1, NODE, node(kx(key_x_1), ky(key_x_1), kz(key_x_1)), U, x
+*GET, u_x_2, NODE, node(kx(key_x_2), ky(key_x_2), kz(key_x_2)), U, x
+
+ux_summ = u_x_1/a + u_x_2/a
+
+nu_xy_eff = -uy_summ/ux_summ
+
+ux_summ = nint((ux_summ)*1000000)/1000000
+uy_summ = nint((uy_summ)*1000000)/1000000
+nu_xy_eff = nint((nu_xy_eff)*1000)/1000
+
+/TITLE, 01_zx, binc =%binc%, ux = %ux_summ%, uy = %uy_summ%, nu_xy_eff = %nu_xy_eff%
+
+/REPLOT
+
+!*
+/efacet, 1
+plnsol, u, x, 0, 1.0
+/view, 1, 1, 2, 3
+/ang, 1
+/rep, fast
+/show, png,,0
+pngr, comp, 1, -1
+pngr, orient, horiz
+pngr, color, 2
+pngr, tmod, 1
+/gfile, 1600, 
+
+!*
+/cmap, _tempcmap_, cmp,, save
+/rgb, index, 100, 100, 100, 0
+/rgb, index, 0, 0, 0, 15
+/replot
+/cmap, _tempcmap_, cmp
+/delete, _tempcmap_, cmp
+/show, close
+/device, vector, 0
+!*
+!*
+/efacet, 1
+plnsol, u, y, 0, 1.0
+/show, png,,0
+pngr, comp, 1, -1
+pngr, orient, horiz
+pngr, color, 2
+pngr, tmod, 1
+/gfile, 1600,
+!*
+/cmap, _tempcmap_, cmp,, save
+/rgb, index, 100, 100, 100, 0
+/rgb, index, 0, 0, 0, 15
+/replot
+/cmap, _tempcmap_, cmp
+/delete, _tempcmap_, cmp
+/show, close
+/device, vector, 0
+
+FINISH
+/CLEAR, START
+
+*enddo
