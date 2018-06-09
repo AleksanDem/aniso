@@ -7,8 +7,8 @@
 FINISH
 /CLEAR, START
 
-!*do, binc, 1, 20, 1
-binc = 1
+*do, binc, 1, 9, 1
+!binc = 1
 
 /PREP7
 
@@ -40,12 +40,12 @@ mp, GYZ, 2, 15.2e9
 mp, GXZ, 2, 15.2e9
 
 a = 0.1
-b_0 = 0.1
+b_0 = 0.03
 c = 0.1
 
-b = b_0 - (binc-1)/200
+b = b_0
 
-b_1 = b/2
+b_1 = (1-binc*0.1)*b
 b_2 = b - b_1
 
 h1_h2 = b_1/b_2
@@ -56,37 +56,43 @@ block, 0, a, 0, -b_2, 0, c
 nummrg, all
 
 ! kol-vo elementov na b
-es = 10
+es = 0.001
 
-lesize, 1, , , es, 0.1
-lesize, 3, , , es, 10
-lesize, 6, , , es, 10
-lesize, 8, , , es, 0.1
+lesize, 1, es
+lesize, 3, es
+lesize, 6, es
+lesize, 8, es
 
-lesize, 2, , , es*(0.5*a/b_1)
-lesize, 7, , , es*(0.5*a/b_1)
-lesize, 11, , , es*(0.5*a/b_1)
-lesize, 12, , , es*(0.5*a/b_1)
+lesize, 4, es*5
+lesize, 5, es*5
+lesize, 9, es*5
+lesize, 10, es*5
+
+!lesize, 1, , , es, 0.1
+!lesize, 3, , , es, 10
+!lesize, 6, , , es, 10
+!lesize, 8, , , es, 0.1
+
+!lesize, 4, , , es*5
+!lesize, 5, , , es*5
+!lesize, 9, , , es*5
+!lesize, 10, , , es*5
 
 mat, 1
 vmesh, 1
 
+lesize, 13, es
+lesize, 15, es
+lesize, 18, es
+lesize, 20, es
 
-
-lesize, 13, , , es, 10
-lesize, 15, , , es, 0.1
-lesize, 18, , , es, 0.1
-lesize, 20, , , es, 10
-
-lesize, 16, , , es*(0.5*a/b_2)
-lesize, 17, , , es*(0.5*a/b_2)
-lesize, 21, , , es*(0.5*a/b_2)
-lesize, 22, , , es*(0.5*a/b_2)
+!lesize, 13, , , 3, 10
+!lesize, 15, , , 3, 0.1
+!lesize, 18, , , 3, 0.1
+!lesize, 20, , , 3, 10
 
 mat, 2
 vmesh, 2
-
-/eof
 
 nummrg, all
 OUTPR,,1
@@ -138,7 +144,7 @@ ux_summ = nint((ux_summ)*1000000)/1000000
 uy_summ = nint((uy_summ)*1000000)/1000000
 nu_xy_eff = nint((nu_xy_eff)*1000)/1000
 
-*cfopen, 2, txt, ,append
+*cfopen, 3, txt, ,append
 *vwrite, es, a, b, c, h1_h2, u_y_1, u_y_2, u_y_3, b_1, uy_summ, u_x_1, u_x_2, b_2, ux_summ, nu_xy_eff
 (F3.0,' 'F8.6,' 'F8.6,' 'F8.6,' 'F8.6,' 'F8.6,' 'F8.6,' 'F8.6,' 'F8.6,' 'F8.6,' 'F8.6,' 'F8.6,' 'F8.6,' 'F8.6,' 'F8.6)
 *cfclose
